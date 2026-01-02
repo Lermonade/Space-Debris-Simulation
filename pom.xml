@@ -61,7 +61,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.lerstudios.space_debris_simulation/com.lerstudios.space_debris_simulation.HelloApplication
+                                com.lerstudios.space_debris_simulation/com.lerstudios.space_debris_simulation.application
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
