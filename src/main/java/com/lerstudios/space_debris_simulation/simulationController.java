@@ -7,18 +7,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Sphere;
+import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import org.fxyz3d.geometry.Point3D;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 public class simulationController {
@@ -29,18 +28,31 @@ public class simulationController {
     public void initialize() {
         Group group = new Group();
 
-        // Objects
-        initializeEarth(group);
-
         // Lighting
-        AmbientLight ambient = new AmbientLight(Color.rgb(30, 30, 30));
-        group.getChildren().add(ambient);
+        //AmbientLight ambient = new AmbientLight(Color.rgb(30, 30, 30));
+        //group.getChildren().add(ambient);
 
         PointLight light = new PointLight(Color.WHITE);
         light.setTranslateX(1000);
         light.setTranslateY(0);
         light.setTranslateZ(0);
         group.getChildren().add(light);
+
+        PointLight light2 = new PointLight(Color.rgb(30, 30, 30));
+        light2.setTranslateX(-1000);
+        light2.setTranslateY(0);
+        light2.setTranslateZ(0);
+        group.getChildren().add(light2);
+
+        PolyLine3D line = new PolyLine3D(
+                List.of(
+                        new Point3D(-500, -500, -500),
+                        new Point3D(500, 500, 500)
+                ),
+                2f,
+                Color.WHITE
+        );
+        group.getChildren().add(line);
 
         // Scene Setup
         SubScene window3D = new SubScene(group, 800, 600, true, SceneAntialiasing.BALANCED);
@@ -51,7 +63,11 @@ public class simulationController {
         window3D.heightProperty().bind(rootPane.heightProperty());
 
         // Camera Setup Functions
-        setupCamera(window3D);
+        Camera camera = setupCamera(window3D);
+
+        // Objects
+        initializeEarth(group);
+        initializeSkybox(group, camera);
 
         // Add the Scene
         rootPane.getChildren().add(window3D);
@@ -63,12 +79,48 @@ public class simulationController {
         // Color Texture
         PhongMaterial material = new PhongMaterial();
         material.setDiffuseMap(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/lerstudios/space_debris_simulation/assets/textures/earth_color.png"))));
+        material.setSpecularMap(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/lerstudios/space_debris_simulation/assets/textures/earth_specular.png"))));
+        material.setSelfIlluminationMap(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/lerstudios/space_debris_simulation/assets/textures/earth_illumination.png"))));
 
         sphere.setMaterial(material);
         group.getChildren().add(sphere);
     }
 
-    public void setupCamera(SubScene window3D) {
+    public void initializeSkybox(Group group, Camera camera) {
+        Sphere skySphere = new Sphere(2500);
+        skySphere.setCullFace(CullFace.FRONT);
+
+        // Color Texture
+        PhongMaterial material = new PhongMaterial();
+        material.setSelfIlluminationMap(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/lerstudios/space_debris_simulation/assets/textures/skybox2.png")),
+                4096,
+                2048,
+                true,
+                false));
+
+        camera.localToSceneTransformProperty().addListener((obs, oldT, t) -> {
+            skySphere.setTranslateX(t.getTx());
+            skySphere.setTranslateY(t.getTy());
+            skySphere.setTranslateZ(t.getTz());
+        });
+
+
+        skySphere.setMaterial(material);
+        group.getChildren().add(skySphere);
+    }
+
+    // Generate an emissive skybox with fully black bg
+    // Add 3D explaination with txsef drawings in the notebook
+    // Add 3D visualization timeline in the notebook by showing one-step-at-a-time
+    // Credits:
+    // https://drive.google.com/drive/folders/1MRwpedip8EJVlm7YZi7lvEajPPN6lBwj
+    // https://science.nasa.gov/earth/earth-observatory/
+    // http://alexcpeterson.com/spacescape/
+    // https://www.youtube.com/watch?v=TRJ0GqDBDac&t=2s
+    // https://www.youtube.com/watch?v=9XJicRt_FaI&t=13535s
+    // https://github.com/FXyz/FXyz/blob/master/FXyz-Core/src/main/java/org/fxyz3d/shapes/composites/PolyLine3D.java
+
+    public Camera setupCamera(SubScene window3D) {
         Camera camera = new PerspectiveCamera(true);
         camera.setNearClip(0.1);
         camera.setFarClip(5000);
@@ -99,7 +151,6 @@ public class simulationController {
             rotateY.setAngle(rotateY.getAngle() + deltaX * 0.5);
             rotateX.setAngle(rotateX.getAngle() - deltaY * 0.5);
 
-            // Clamp pitch so camera doesn't flip
             rotateX.setAngle(Math.max(-90, Math.min(90, rotateX.getAngle())));
 
             anchorX[0] = e.getSceneX();
@@ -137,6 +188,8 @@ public class simulationController {
             });
 
         });
+
+        return camera;
     }
 
     public void switchToScene1(ActionEvent event) throws IOException {
