@@ -1,31 +1,63 @@
 package com.lerstudios.space_debris_simulation;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.fxyz3d.geometry.Point3D;
 
+import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class simulationController {
 
     @FXML
-    private AnchorPane rootPane;
+    private AnchorPane rootPane; // 3D Root Pane
 
+    @FXML
+    private Label timeDisplay; // Top time display text
+
+    @FXML
+    private Label timeTextDisplay; // Bottom time display text
+
+    @FXML
+    private Button pausePlayButton;
+
+    @FXML
+    private Button speedButton;
+
+    @FXML
+    private Button slowButton;
+
+    @FXML
+    private Button startButton;
+
+    @FXML
+    private Button endButton;
+
+    @FXML
     public void initialize() {
+        Timing timing = new Timing(timeDisplay, timeTextDisplay, pausePlayButton, speedButton, slowButton, startButton, endButton);
+
         Group group = new Group();
 
         // Lighting
@@ -45,11 +77,8 @@ public class simulationController {
         group.getChildren().add(light2);
 
         PolyLine3D line = new PolyLine3D(
-                List.of(
-                        new Point3D(-500, -500, -500),
-                        new Point3D(500, 500, 500)
-                ),
-                2f,
+                generateEllipsePoints(0, 0, 0, 200, 0.3, 0, Math.PI/4, Math.PI/2, 20),
+                1f,
                 Color.WHITE
         );
         group.getChildren().add(line);
@@ -78,9 +107,21 @@ public class simulationController {
 
         // Color Texture
         PhongMaterial material = new PhongMaterial();
-        material.setDiffuseMap(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/lerstudios/space_debris_simulation/assets/textures/earth_color.png"))));
-        material.setSpecularMap(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/lerstudios/space_debris_simulation/assets/textures/earth_specular.png"))));
-        material.setSelfIlluminationMap(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/lerstudios/space_debris_simulation/assets/textures/earth_illumination.png"))));
+        material.setDiffuseMap(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/lerstudios/space_debris_simulation/assets/textures/earth_color.png")),
+                4096,
+                2048,
+                true,
+                false));
+        material.setSpecularMap(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/lerstudios/space_debris_simulation/assets/textures/earth_specular.png")),
+                4096,
+                2048,
+                true,
+                false));
+        material.setSelfIlluminationMap(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/lerstudios/space_debris_simulation/assets/textures/earth_illumination.png")),
+                4096,
+                2048,
+                true,
+                false));
 
         sphere.setMaterial(material);
         group.getChildren().add(sphere);
@@ -191,6 +232,75 @@ public class simulationController {
 
         return camera;
     }
+
+    public static List<Point3D> generateEllipsePoints(
+            int focusX,
+            int focusY,
+            int focusZ,
+            double semiMajorAxis,        // a
+            double eccentricity,         // e (0 <= e < 1)
+            double argumentOfPeriapsis,  // ω (radians)
+            double inclination,          // i (radians)
+            double raOfAscendingNode,    // Ω (radians)
+            int resolution
+    ) {
+        if (eccentricity < 0 || eccentricity >= 1) {
+            throw new IllegalArgumentException("Eccentricity must be in range [0, 1).");
+        }
+
+        List<Point3D> points = new ArrayList<>();
+
+        double a = semiMajorAxis;
+        double b = a * Math.sqrt(1 - eccentricity * eccentricity);
+        double c = a * eccentricity;
+
+        double cosW = Math.cos(argumentOfPeriapsis);
+        double sinW = Math.sin(argumentOfPeriapsis);
+
+        double cosI = Math.cos(inclination);
+        double sinI = Math.sin(inclination);
+
+        double cosO = Math.cos(raOfAscendingNode);
+        double sinO = Math.sin(raOfAscendingNode);
+
+        for (int i = 0; i < resolution; i++) {
+            double angle = 2 * Math.PI * i / resolution;
+
+            // --- 1. Ellipse in its own plane (focus-based, periapsis on +X)
+            double x = a * Math.cos(angle) + c;
+            double z = b * Math.sin(angle);
+            double y = 0;
+
+            // --- 2. Rotate by argument of periapsis (ω) in orbital plane
+            double x1 =  x * cosW - z * sinW;
+            double z1 =  x * sinW + z * cosW;
+            double y1 =  y;
+
+            // --- 3. Apply inclination (i) — rotate about X axis
+            double x2 = x1;
+            double y2 = y1 * cosI - z1 * sinI;
+            double z2 = y1 * sinI + z1 * cosI;
+
+            // --- 4. Apply RA of ascending node (Ω) — rotate about Y axis
+            double x3 =  x2 * cosO - z2 * sinO;
+            double z3 =  x2 * sinO + z2 * cosO;
+            double y3 =  y2;
+
+            // --- 5. Translate to focus position
+            int worldX = focusX + (int) Math.round(x3);
+            int worldY = focusY + (int) Math.round(y3);
+            int worldZ = focusZ + (int) Math.round(z3);
+
+            points.add(new Point3D(worldX, worldY, worldZ));
+        }
+
+        points.add(points.getFirst()); // close the ellipse
+        return points;
+    }
+
+
+
+
 
     public void switchToScene1(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(
