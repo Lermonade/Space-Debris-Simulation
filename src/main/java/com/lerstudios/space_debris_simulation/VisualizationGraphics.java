@@ -1,63 +1,41 @@
 package com.lerstudios.space_debris_simulation;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.*;
+import javafx.scene.shape.CullFace;
+import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.fxyz3d.geometry.Point3D;
 
-import java.awt.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class simulationController {
+public class VisualizationGraphics {
 
-    @FXML
-    private AnchorPane rootPane; // 3D Root Pane
+    // Generate an emissive skybox with fully black bg
+    // Add 3D explaination with txsef drawings in the notebook
+    // Add 3D visualization timeline in the notebook by showing one-step-at-a-time
+    // Credits:
+    // https://drive.google.com/drive/folders/1MRwpedip8EJVlm7YZi7lvEajPPN6lBwj
+    // https://science.nasa.gov/earth/earth-observatory/
+    // http://alexcpeterson.com/spacescape/
+    // https://www.youtube.com/watch?v=TRJ0GqDBDac&t=2s
+    // https://www.youtube.com/watch?v=9XJicRt_FaI&t=13535s
+    // https://github.com/FXyz/FXyz/blob/master/FXyz-Core/src/main/java/org/fxyz3d/shapes/composites/PolyLine3D.java
 
-    @FXML
-    private Label timeDisplay; // Top time display text
+    public VisualizationGraphics(AnchorPane rootPane) {
+        initialize3D(rootPane);
+    }
 
-    @FXML
-    private Label timeTextDisplay; // Bottom time display text
-
-    @FXML
-    private Button pausePlayButton;
-
-    @FXML
-    private Button speedButton;
-
-    @FXML
-    private Button slowButton;
-
-    @FXML
-    private Button startButton;
-
-    @FXML
-    private Button endButton;
-
-    @FXML
-    public void initialize() {
-        Timing timing = new Timing(timeDisplay, timeTextDisplay, pausePlayButton, speedButton, slowButton, startButton, endButton);
-
+    private void initialize3D(AnchorPane rootPane) {
         Group group = new Group();
 
         // Lighting
@@ -102,7 +80,7 @@ public class simulationController {
         rootPane.getChildren().add(window3D);
     }
 
-    public void initializeEarth(Group group) {
+    private void initializeEarth(Group group) {
         Sphere sphere = new Sphere(100);
 
         // Color Texture
@@ -127,7 +105,7 @@ public class simulationController {
         group.getChildren().add(sphere);
     }
 
-    public void initializeSkybox(Group group, Camera camera) {
+    private void initializeSkybox(Group group, Camera camera) {
         Sphere skySphere = new Sphere(2500);
         skySphere.setCullFace(CullFace.FRONT);
 
@@ -150,18 +128,7 @@ public class simulationController {
         group.getChildren().add(skySphere);
     }
 
-    // Generate an emissive skybox with fully black bg
-    // Add 3D explaination with txsef drawings in the notebook
-    // Add 3D visualization timeline in the notebook by showing one-step-at-a-time
-    // Credits:
-    // https://drive.google.com/drive/folders/1MRwpedip8EJVlm7YZi7lvEajPPN6lBwj
-    // https://science.nasa.gov/earth/earth-observatory/
-    // http://alexcpeterson.com/spacescape/
-    // https://www.youtube.com/watch?v=TRJ0GqDBDac&t=2s
-    // https://www.youtube.com/watch?v=9XJicRt_FaI&t=13535s
-    // https://github.com/FXyz/FXyz/blob/master/FXyz-Core/src/main/java/org/fxyz3d/shapes/composites/PolyLine3D.java
-
-    public Camera setupCamera(SubScene window3D) {
+    private Camera setupCamera(SubScene window3D) {
         Camera camera = new PerspectiveCamera(true);
         camera.setNearClip(0.1);
         camera.setFarClip(5000);
@@ -233,7 +200,7 @@ public class simulationController {
         return camera;
     }
 
-    public static List<Point3D> generateEllipsePoints(
+    private static List<Point3D> generateEllipsePoints(
             int focusX,
             int focusY,
             int focusZ,
@@ -296,19 +263,5 @@ public class simulationController {
 
         points.add(points.getFirst()); // close the ellipse
         return points;
-    }
-
-
-
-
-
-    public void switchToScene1(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                Objects.requireNonNull(getClass().getResource("main.fxml"))
-        );
-        Parent root = loader.load();
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.getScene().setRoot(root);
     }
 }
