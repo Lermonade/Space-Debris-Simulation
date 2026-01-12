@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import java.text.DecimalFormat;
+import java.util.function.Consumer;
 
 public class Timing {
 
@@ -28,7 +29,7 @@ public class Timing {
     private static final double updateSpeed = 0.05; // UI Updates / Second
     private static double speed = 1; // Time multiplier. 1 is regular speed.
 
-    public Timing(Label timeDisplay, Label timeTextDisplay, Button pausePlayButton, Button speedButton, Button slowButton,
+    public Timing(Consumer<Double> updateScene, Label timeDisplay, Label timeTextDisplay, Button pausePlayButton, Button speedButton, Button slowButton,
                   Button startButton, Button endButton) {
         this.timeDisplay = timeDisplay;
         this.timeTextDisplay = timeTextDisplay;
@@ -50,6 +51,7 @@ public class Timing {
                     }
 
                     this.updateDisplays();
+                    updateScene.accept(elapsedSeconds);
                 })
         );
         timer.setCycleCount(Timeline.INDEFINITE);

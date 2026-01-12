@@ -3,11 +3,14 @@ package com.lerstudios.space_debris_simulation;
 import javafx.application.Platform;
 import javafx.scene.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Box;
 import javafx.scene.shape.CullFace;
+import javafx.scene.shape.Shape3D;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
@@ -31,12 +34,14 @@ public class VisualizationGraphics {
     // https://www.youtube.com/watch?v=9XJicRt_FaI&t=13535s
     // https://github.com/FXyz/FXyz/blob/master/FXyz-Core/src/main/java/org/fxyz3d/shapes/composites/PolyLine3D.java
 
+    private Group group;
+
     public VisualizationGraphics(AnchorPane rootPane) {
         initialize3D(rootPane);
     }
 
     private void initialize3D(AnchorPane rootPane) {
-        Group group = new Group();
+        group = new Group();
 
         // Lighting
         //AmbientLight ambient = new AmbientLight(Color.rgb(30, 30, 30));
@@ -53,13 +58,6 @@ public class VisualizationGraphics {
         light2.setTranslateY(0);
         light2.setTranslateZ(0);
         group.getChildren().add(light2);
-
-        PolyLine3D line = new PolyLine3D(
-                generateEllipsePoints(0, 0, 0, 200, 0.3, 0, Math.PI/4, Math.PI/2, 20),
-                1f,
-                Color.WHITE
-        );
-        group.getChildren().add(line);
 
         // Scene Setup
         SubScene window3D = new SubScene(group, 800, 600, true, SceneAntialiasing.BALANCED);
@@ -200,68 +198,14 @@ public class VisualizationGraphics {
         return camera;
     }
 
-    private static List<Point3D> generateEllipsePoints(
-            int focusX,
-            int focusY,
-            int focusZ,
-            double semiMajorAxis,        // a
-            double eccentricity,         // e (0 <= e < 1)
-            double argumentOfPeriapsis,  // ω (radians)
-            double inclination,          // i (radians)
-            double raOfAscendingNode,    // Ω (radians)
-            int resolution
-    ) {
-        if (eccentricity < 0 || eccentricity >= 1) {
-            throw new IllegalArgumentException("Eccentricity must be in range [0, 1).");
-        }
-
-        List<Point3D> points = new ArrayList<>();
-
-        double a = semiMajorAxis;
-        double b = a * Math.sqrt(1 - eccentricity * eccentricity);
-        double c = a * eccentricity;
-
-        double cosW = Math.cos(argumentOfPeriapsis);
-        double sinW = Math.sin(argumentOfPeriapsis);
-
-        double cosI = Math.cos(inclination);
-        double sinI = Math.sin(inclination);
-
-        double cosO = Math.cos(raOfAscendingNode);
-        double sinO = Math.sin(raOfAscendingNode);
-
-        for (int i = 0; i < resolution; i++) {
-            double angle = 2 * Math.PI * i / resolution;
-
-            // --- 1. Ellipse in its own plane (focus-based, periapsis on +X)
-            double x = a * Math.cos(angle) + c;
-            double z = b * Math.sin(angle);
-            double y = 0;
-
-            // --- 2. Rotate by argument of periapsis (ω) in orbital plane
-            double x1 =  x * cosW - z * sinW;
-            double z1 =  x * sinW + z * cosW;
-            double y1 =  y;
-
-            // --- 3. Apply inclination (i) — rotate about X axis
-            double x2 = x1;
-            double y2 = y1 * cosI - z1 * sinI;
-            double z2 = y1 * sinI + z1 * cosI;
-
-            // --- 4. Apply RA of ascending node (Ω) — rotate about Y axis
-            double x3 =  x2 * cosO - z2 * sinO;
-            double z3 =  x2 * sinO + z2 * cosO;
-            double y3 =  y2;
-
-            // --- 5. Translate to focus position
-            int worldX = focusX + (int) Math.round(x3);
-            int worldY = focusY + (int) Math.round(y3);
-            int worldZ = focusZ + (int) Math.round(z3);
-
-            points.add(new Point3D(worldX, worldY, worldZ));
-        }
-
-        points.add(points.getFirst()); // close the ellipse
-        return points;
+    public void add3DObjectToGroup(Shape3D object) {
+        if (this.group == null || object == null) return;
+        this.group.getChildren().add(object);
     }
+
+    public void addGrouptoGroup(Group group2) {
+        if (this.group == null || group2 == null) return;
+        this.group.getChildren().add(group2);
+    }
+
 }
