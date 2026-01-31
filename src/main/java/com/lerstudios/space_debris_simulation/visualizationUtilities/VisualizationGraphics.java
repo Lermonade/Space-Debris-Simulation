@@ -1,4 +1,4 @@
-package com.lerstudios.space_debris_simulation;
+package com.lerstudios.space_debris_simulation.visualizationUtilities;
 
 import javafx.application.Platform;
 import javafx.scene.*;
@@ -8,17 +8,13 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.CullFace;
-import javafx.scene.shape.Shape3D;
-import javafx.scene.shape.Sphere;
+import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import org.fxyz3d.geometry.Point3D;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
+
 import java.util.Objects;
 
 public class VisualizationGraphics {
@@ -58,6 +54,8 @@ public class VisualizationGraphics {
         light2.setTranslateY(0);
         light2.setTranslateZ(0);
         group.getChildren().add(light2);
+
+        this.addManyParticles();
 
         // Scene Setup
         SubScene window3D = new SubScene(group, 800, 600, true, SceneAntialiasing.BALANCED);
@@ -207,5 +205,67 @@ public class VisualizationGraphics {
         if (this.group == null || group2 == null) return;
         this.group.getChildren().add(group2);
     }
+
+    public void addManyParticles() {
+        int numParticles = 500_000;
+        float particleSize = 0.1f; // half-size → full size = 10
+        float halfRange = 100f;  // positions from -300 to +300
+
+        TriangleMesh mesh = new TriangleMesh();
+
+        float[] points = new float[numParticles * 4 * 3]; // 4 vertices per particle, 3 coords
+        int p = 0;
+
+        Random random = new Random();
+
+        for (int i = 0; i < numParticles; i++) {
+            float x = random.nextFloat() * 2 * halfRange - halfRange; // -300 to +300
+            float y = random.nextFloat() * 2 * halfRange - halfRange;
+            float z = random.nextFloat() * 2 * halfRange - halfRange;
+
+            // 4 vertices per particle
+            points[p++] = x - particleSize; points[p++] = y - particleSize; points[p++] = z;
+            points[p++] = x + particleSize; points[p++] = y - particleSize; points[p++] = z;
+            points[p++] = x - particleSize; points[p++] = y + particleSize; points[p++] = z;
+            points[p++] = x + particleSize; points[p++] = y + particleSize; points[p++] = z;
+        }
+
+        mesh.getPoints().setAll(points);
+
+        // dummy texture coords
+        mesh.getTexCoords().setAll(0, 0);
+
+        // faces (2 triangles per particle)
+        int[] faces = new int[numParticles * 6 * 2]; // 6 indices per triangle, 2 triangles per particle
+        int f = 0;
+        for (int i = 0; i < numParticles; i++) {
+            int base = i * 4;
+            // triangle 1
+            faces[f++] = base + 0; faces[f++] = 0;
+            faces[f++] = base + 1; faces[f++] = 0;
+            faces[f++] = base + 2; faces[f++] = 0;
+            // triangle 2
+            faces[f++] = base + 2; faces[f++] = 0;
+            faces[f++] = base + 1; faces[f++] = 0;
+            faces[f++] = base + 3; faces[f++] = 0;
+        }
+        mesh.getFaces().setAll(faces);
+
+        MeshView view = new MeshView(mesh);
+
+        // emissive red material
+        WritableImage redEmissive = new WritableImage(1, 1);
+        redEmissive.getPixelWriter().setColor(0, 0, Color.RED);
+
+        PhongMaterial redMaterial = new PhongMaterial();
+        redMaterial.setDiffuseColor(Color.DARKRED);
+        redMaterial.setSelfIlluminationMap(redEmissive);
+
+        view.setMaterial(redMaterial);
+        view.setCullFace(CullFace.NONE);
+
+        this.group.getChildren().add(view);
+    }
+
 
 }

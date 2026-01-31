@@ -1,11 +1,9 @@
-package com.lerstudios.space_debris_simulation;
+package com.lerstudios.space_debris_simulation.visualizationUtilities;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import java.text.DecimalFormat;

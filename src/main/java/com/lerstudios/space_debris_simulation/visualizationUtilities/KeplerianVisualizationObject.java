@@ -1,11 +1,9 @@
-package com.lerstudios.space_debris_simulation.visualizationTools;
+package com.lerstudios.space_debris_simulation.visualizationUtilities;
 
-import com.lerstudios.space_debris_simulation.Constants;
-import com.lerstudios.space_debris_simulation.PolyLine3D;
+import com.lerstudios.space_debris_simulation.utils.Constants;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
 import javafx.scene.shape.Sphere;
 import org.fxyz3d.geometry.Point3D;
 

@@ -1,6 +1,8 @@
 package com.lerstudios.space_debris_simulation;
 
-import com.lerstudios.space_debris_simulation.visualizationTools.KeplerianVisualizationObject;
+import com.lerstudios.space_debris_simulation.visualizationUtilities.KeplerianVisualizationObject;
+import com.lerstudios.space_debris_simulation.visualizationUtilities.Timing;
+import com.lerstudios.space_debris_simulation.visualizationUtilities.VisualizationGraphics;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,7 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.fxyz3d.geometry.Point3D;
+
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -131,7 +133,7 @@ public class visualizationController {
         keplerianObjects.put("orbit9", new KeplerianVisualizationObject(6780000, 0.0005, 0, Math.toRadians(0), Math.toRadians(45), Math.toRadians(270)));
         keplerianObjects.put("orbit10", new KeplerianVisualizationObject(7100000, 0.02, Math.toRadians(330), Math.toRadians(75), Math.toRadians(200), Math.toRadians(135)));*/
 
-        generateRandomLEODebris(keplerianObjects, 60000);
+        //generateRandomLEODebris(keplerianObjects, 60000);
 
 
         visualization = new VisualizationGraphics(rootPane);

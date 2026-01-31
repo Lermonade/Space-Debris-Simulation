@@ -1,4 +1,4 @@
-package com.lerstudios.space_debris_simulation.visualizationTools;
+package com.lerstudios.space_debris_simulation.visualizationUtilities;
 
 import org.fxyz3d.geometry.Point3D;
 

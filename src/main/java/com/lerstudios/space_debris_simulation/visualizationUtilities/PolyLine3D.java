@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.lerstudios.space_debris_simulation;
+package com.lerstudios.space_debris_simulation.visualizationUtilities;
 
 import java.util.List;
 import javafx.scene.AmbientLight;
