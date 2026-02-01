@@ -6,6 +6,7 @@ import com.lerstudios.space_debris_simulation.configurationUtilities.SimulationS
 import com.lerstudios.space_debris_simulation.configurationUtilities.uiBuilders.PopulationsUIBuilder;
 import com.lerstudios.space_debris_simulation.configurationUtilities.uiBuilders.SourcesUIBuilder;
 import com.lerstudios.space_debris_simulation.configurationUtilities.uiBuilders.RemovalMethodsUIBuilder;
+import com.lerstudios.space_debris_simulation.simulation.Simulation;
 import com.lerstudios.space_debris_simulation.utils.Constants;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -51,14 +52,19 @@ public class configurationController {
     private SimulationSettings settings;
     private Path settingsPath;
 
+    private Console console;
+    private Simulation simulation;
+
     @FXML
     private void initialize() {
+        console = new Console(consoleBox);
+        simulation = new Simulation(console);
     }
 
     public void runSimulation() {
-        addTextToConsole("Running Simulation '" + settings.simulationName + "'");
+        console.addTextToConsole("Running Simulation '" + settings.simulationName + "'");
 
-        showSimulationProgressPopup("Running Simulation '" + settings.simulationName + "'");
+        simulation.runSimulation("Running Simulation '" + settings.simulationName + "'", settings);
     }
 
     public void addPopulation() {
@@ -66,7 +72,7 @@ public class configurationController {
     }
 
     public void addKeplerianDistribution() {
-        SourcesUIBuilder.addKeplerianSourceComponent("Unnamed", sourcesBox, settings.keplerianDistributionSources);
+        SourcesUIBuilder.addKeplerianSourceComponent("Unnamed", sourcesBox, settings.sources);
     }
 
     public void addOrbitalLaserRemovalMethod() {
@@ -75,7 +81,7 @@ public class configurationController {
 
     public void createNewProjectFile() throws IOException {
         FileService.createEmptyProjectFile(Constants.appName, "Project", "Project", "Newly Created Project");
-        addTextToConsole("File Generated");
+        console.addTextToConsole("File Generated");
     }
 
     private void setupListeners() {
@@ -91,20 +97,7 @@ public class configurationController {
     @FXML
     private void onSave() {
         settingsPath = FileService.saveProjectSettings(settingsPath, settings);
-        addTextToConsole("Saved '" + settings.simulationName + "' in /user/documents/" + Constants.appName + ".");
-    }
-
-    @FXML
-    public void addTextToConsole(String text) {
-        Label label = new Label("> " + text);
-
-        label.setTextFill(javafx.scene.paint.Color.WHITE);
-        label.setFont(Font.font("Consolas", 12));
-        label.setWrapText(true);
-
-        VBox.setMargin(label, new javafx.geometry.Insets(0, 0, 16, 0));
-
-        consoleBox.getChildren().add(label);
+        console.addTextToConsole("Saved '" + settings.simulationName + "' in /user/documents/" + Constants.appName + ".");
     }
 
     public void initProject(Path projectFile) {
@@ -121,59 +114,4 @@ public class configurationController {
 
         setupListeners();
     }
-
-    public static Stage showSimulationProgressPopup(String title) {
-        Stage popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle(title);
-        popupStage.setResizable(false);
-
-        VBox root = new VBox(15);
-        root.setPadding(new Insets(20));
-        root.setAlignment(Pos.CENTER);
-
-        Label messageLabel = new Label("0 / 20 seconds");
-        ProgressBar progressBar = new ProgressBar(0);
-        progressBar.setPrefWidth(300);
-
-        Button closeButton = new Button("Close");
-        closeButton.setDisable(true);
-
-        root.getChildren().addAll(messageLabel, progressBar, closeButton);
-
-        Scene scene = new Scene(root);
-        popupStage.setScene(scene);
-        popupStage.centerOnScreen();
-        popupStage.show();
-
-        Task<Void> task = new Task<>() {
-            @Override
-            protected Void call() throws Exception {
-                int totalSeconds = 20;
-                for (int i = 1; i <= totalSeconds; i++) {
-                    Thread.sleep(1000);
-                    final int second = i;
-                    Platform.runLater(() -> {
-                        progressBar.setProgress(second / (double) totalSeconds);
-                        messageLabel.setText(second + " / " + totalSeconds + " seconds");
-                    });
-                }
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(ev -> {
-            closeButton.setDisable(false);
-        });
-
-        closeButton.setOnAction(ev -> popupStage.close());
-
-        Thread thread = new Thread(task);
-        thread.setDaemon(true);
-        thread.start();
-
-        return popupStage;
-    }
-
-
 }

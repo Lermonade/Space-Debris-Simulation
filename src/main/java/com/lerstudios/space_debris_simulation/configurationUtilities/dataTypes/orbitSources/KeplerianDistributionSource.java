@@ -103,4 +103,10 @@ public class KeplerianDistributionSource implements SourceTemplate {
     public SourceType getSourceType() {
         return SourceType.KEPLERIAN;
     }
+
+    @Override
+    @JsonIgnore
+    public String getName() {
+        return sourceName;
+    }
 }

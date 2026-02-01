@@ -217,12 +217,12 @@ public class SourcesUIBuilder {
     ) {
         sourcesBox.getChildren().clear();
 
-        for (SourceTemplate source : settings.keplerianDistributionSources) {
+        for (SourceTemplate source : settings.sources) {
             if(source.getSourceType() == SourceType.KEPLERIAN) {
                 addKeplerianSourceComponent(
                         (KeplerianDistributionSource) source,
                         sourcesBox,
-                        settings.keplerianDistributionSources
+                        settings.sources
                 );
             }
         }

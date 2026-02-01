@@ -48,6 +48,7 @@ public class PopulationsUIBuilder {
                     return row;
                 };
 
+        // UI controls (prefilled from object)
         TextField populationNameField = new TextField(pop.populationName);
 
         ComboBox<String> objectClassificationBox = new ComboBox<>();
@@ -80,10 +81,17 @@ public class PopulationsUIBuilder {
         );
         sourceField.setPromptText("none");
 
+        // NEW: Count field (stored as String)
+        TextField countField = new TextField(
+                pop.count != null ? pop.count : "0"
+        );
+
+        // Add to list if needed
         if (!populationList.contains(pop)) {
             populationList.add(pop);
         }
 
+        // Listeners
         populationNameField.textProperty().addListener(
                 (obs, o, n) -> pop.populationName = n
         );
@@ -101,6 +109,9 @@ public class PopulationsUIBuilder {
         );
         sourceField.textProperty().addListener(
                 (obs, o, n) -> pop.source = n
+        );
+        countField.textProperty().addListener(
+                (obs, o, n) -> pop.count = n
         );
 
         Button deleteButton = new Button("Delete");
@@ -125,12 +136,12 @@ public class PopulationsUIBuilder {
                 createRow.apply("Rendering Method", renderingMethodBox),
                 createRow.apply("Rendering Color", colorField),
                 createRow.apply("Source", sourceField),
+                createRow.apply("Count", countField), // ✅ NEW
                 deleteRow
         );
 
         populationsBox.getChildren().add(populationVBox);
     }
-
 
     public static void addPopulationComponent(
             String populationName,
@@ -143,11 +154,13 @@ public class PopulationsUIBuilder {
                 "Two-Body Keplerian",
                 "3D Objects",
                 "#FFFFFF",
-                "none"
+                "none",
+                "0"
         );
 
         addPopulationComponent(pop, populationsBox, populationList);
     }
+
 
     public static void loadPopulationsFromSettings(
             SimulationSettings settings,

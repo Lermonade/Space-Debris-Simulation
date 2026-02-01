@@ -8,6 +8,7 @@ public class PopulationObject {
     public String renderingMethod;
     public String renderingColor;
     public String source;
+    public String count;
 
     public PopulationObject() {
 
@@ -19,7 +20,8 @@ public class PopulationObject {
             String propagationMethod,
             String renderingMethod,
             String renderingColor,
-            String source
+            String source,
+            String count
     ) {
         this.populationName = populationName;
         this.objectClassification = objectClassification;
@@ -27,5 +29,6 @@ public class PopulationObject {
         this.renderingMethod = renderingMethod;
         this.renderingColor = renderingColor;
         this.source = source;
+        this.count = count;
     }
 }

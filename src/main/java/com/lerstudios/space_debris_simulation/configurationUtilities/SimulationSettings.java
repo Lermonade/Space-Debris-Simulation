@@ -29,7 +29,7 @@ public class SimulationSettings {
     public List<SimulationConstant> constants = new ArrayList<>();
     public ArrayList<PopulationObject> populationObjects = new ArrayList<>();
 
-    public ArrayList<SourceTemplate> keplerianDistributionSources = new ArrayList<>();
+    public ArrayList<SourceTemplate> sources = new ArrayList<>();
 
     public ArrayList<RemovalMethodTemplate> removalmethods = new ArrayList<>();
 
@@ -64,4 +64,20 @@ public class SimulationSettings {
             constants.add(SimulationConstant.vector(name, (Vector3) value));
         }
     }
+
+    public double getNumber(String name, double defaultValue) {
+        Object value = getOrDefault(name, defaultValue);
+        return value instanceof Number ? ((Number) value).doubleValue() : defaultValue;
+    }
+
+    public String getString(String name, String defaultValue) {
+        Object value = getOrDefault(name, defaultValue);
+        return value != null ? value.toString() : defaultValue;
+    }
+
+    public Vector3 getVector(String name, Vector3 defaultValue) {
+        Object value = getOrDefault(name, defaultValue);
+        return value instanceof Vector3 ? (Vector3) value : defaultValue;
+    }
+
 }
