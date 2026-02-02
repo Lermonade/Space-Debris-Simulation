@@ -1,30 +1,25 @@
 package com.lerstudios.space_debris_simulation;
 
 import com.lerstudios.space_debris_simulation.configurationUtilities.uiBuilders.ConstantsUIBuilder;
-import com.lerstudios.space_debris_simulation.configurationUtilities.FileService;
 import com.lerstudios.space_debris_simulation.configurationUtilities.SimulationSettings;
 import com.lerstudios.space_debris_simulation.configurationUtilities.uiBuilders.PopulationsUIBuilder;
 import com.lerstudios.space_debris_simulation.configurationUtilities.uiBuilders.SourcesUIBuilder;
 import com.lerstudios.space_debris_simulation.configurationUtilities.uiBuilders.RemovalMethodsUIBuilder;
 import com.lerstudios.space_debris_simulation.simulation.Simulation;
+import com.lerstudios.space_debris_simulation.simulation.exportFormats.VisualizationFile;
 import com.lerstudios.space_debris_simulation.utils.Constants;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class configurationController {
 
@@ -62,6 +57,7 @@ public class configurationController {
     }
 
     public void runSimulation() {
+        onSave();
         console.addTextToConsole("Running Simulation '" + settings.simulationName + "'");
 
         simulation.runSimulation("Running Simulation '" + settings.simulationName + "'", settings);
@@ -114,4 +110,30 @@ public class configurationController {
 
         setupListeners();
     }
+
+    public void openVisualizationFile(ActionEvent event) throws IOException {
+        VisualizationFile format = FileService.openVisualizationFile(Constants.appName, settings.simulationName, sourcesBox.getScene().getWindow());
+
+        FXMLLoader loader = new FXMLLoader(
+                Objects.requireNonNull(getClass().getResource("visualization.fxml"))
+        );
+        Parent root = loader.load();
+
+        visualizationController controller = loader.getController();
+        controller.initVisualization(format);
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.getScene().setRoot(root);
+    }
+
+    public void backToMain(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                Objects.requireNonNull(getClass().getResource("main.fxml"))
+        );
+        Parent root = loader.load();
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.getScene().setRoot(root);
+    }
+
 }

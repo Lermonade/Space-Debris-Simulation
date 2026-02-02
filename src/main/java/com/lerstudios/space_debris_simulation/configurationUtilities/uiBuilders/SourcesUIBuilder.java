@@ -3,7 +3,7 @@ package com.lerstudios.space_debris_simulation.configurationUtilities.uiBuilders
 import com.lerstudios.space_debris_simulation.configurationUtilities.SimulationSettings;
 import com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.orbitSources.KeplerianDistributionSource;
 import com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.orbitSources.SourceTemplate;
-import com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.orbitSources.SourceType;
+import com.lerstudios.space_debris_simulation.simulation.types.SourceType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -186,16 +186,28 @@ public class SourcesUIBuilder {
                 new KeplerianDistributionSource(
                         sourceName,
 
-                        /* semi-major axis */ "7000", "7500", "8000",
-                        /* eccentricity */   "0.0",  "0.01", "0.05",
-                        /* inclination */    "0",    "53",   "98",
+                        /* semi-major axis (m) */
+                        "6771000", "7171000", "7571000",
 
-                        /* RAAN */           "0",    "180",  "360",
-                        /* arg periapsis */  "0",    "180",  "360",
-                        /* anomaly */        "0",    "180",  "360",
+                        /* eccentricity */
+                        "0.0001", "0.01", "0.05",
 
-                        /* mass */           "1",    "10",   "100"
+                        /* inclination (deg) */
+                        "0", "53", "98",
+
+                        /* RAAN (deg) */
+                        "0", "180", "360",
+
+                        /* arg periapsis (deg) */
+                        "0", "180", "360",
+
+                        /* anomaly (deg) */
+                        "0", "180", "360",
+
+                        /* mass (kg) */
+                        "5", "100", "1000"
                 );
+
 
         addKeplerianSourceComponent(source, sourcesBox, sourceList);
     }

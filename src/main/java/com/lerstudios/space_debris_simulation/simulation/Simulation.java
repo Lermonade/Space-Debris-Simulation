@@ -1,21 +1,24 @@
 package com.lerstudios.space_debris_simulation.simulation;
 
 import com.lerstudios.space_debris_simulation.Console;
+import com.lerstudios.space_debris_simulation.FileService;
 import com.lerstudios.space_debris_simulation.configurationUtilities.SimulationSettings;
 import com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.PopulationObject;
 import com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.orbitSources.KeplerianDistributionSource;
 import com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.orbitSources.SourceTemplate;
-import com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.orbitSources.SourceType;
-import com.lerstudios.space_debris_simulation.simulation.OrbitDataSource.KeplerianDistribution;
-import com.lerstudios.space_debris_simulation.simulation.OrbitDataSource.OrbitDataSource;
-import com.lerstudios.space_debris_simulation.simulation.OrbitPopulations.ObjectClassification;
+import com.lerstudios.space_debris_simulation.simulation.exportFormats.VisualizationFile;
+import com.lerstudios.space_debris_simulation.simulation.exportFormats.VisualizationFileFormatters;
+import com.lerstudios.space_debris_simulation.simulation.types.KeplerianElements;
+import com.lerstudios.space_debris_simulation.simulation.types.SourceType;
+import com.lerstudios.space_debris_simulation.simulation.OrbitPopulations.OrbitDataSource.KeplerianDistribution;
+import com.lerstudios.space_debris_simulation.simulation.OrbitPopulations.OrbitDataSource.OrbitDataSource;
+import com.lerstudios.space_debris_simulation.simulation.types.ObjectClassification;
 import com.lerstudios.space_debris_simulation.simulation.OrbitPopulations.OrbitalPopulation;
-import com.lerstudios.space_debris_simulation.simulation.Propagation.KeplerianOrbitalObject;
-import com.lerstudios.space_debris_simulation.simulation.Propagation.OrbitalObject;
-import com.lerstudios.space_debris_simulation.simulation.Propagation.PropegationMethod;
-import com.lerstudios.space_debris_simulation.simulation.Propagation.TimedKeplerianElements;
+import com.lerstudios.space_debris_simulation.simulation.Propagation.PopulationObjects.StaticKeplerianObject;
+import com.lerstudios.space_debris_simulation.simulation.Propagation.PopulationObjects.OrbitalObject;
+import com.lerstudios.space_debris_simulation.simulation.types.PropegationMethod;
+import com.lerstudios.space_debris_simulation.utils.Constants;
 import com.lerstudios.space_debris_simulation.visualizationUtilities.RenderingMethod;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -30,7 +33,6 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Simulation {
 
@@ -90,16 +92,16 @@ public class Simulation {
                 SimUtils.setEndTimeStep(totalSteps);
                 SimUtils.setCurrentTimeStep(0);
 
+                SimUtils.resetID();
+
                 ArrayList<OrbitalPopulation> populations = generateOrbitalPopulations(settings);
 
                 for (OrbitalPopulation pop : populations) {
                     for(OrbitalObject obj : pop.orbitalObjects) {
-                        System.out.println(obj.getName());
 
-                        if(pop.propegationMethod == PropegationMethod.DYNAMIC_FORCE_MODEL) {
-                            KeplerianOrbitalObject obj2 = (KeplerianOrbitalObject) obj;
-                            TimedKeplerianElements element1 = obj2.elements.getFirst();
-                            System.out.println(element1.elements().inclination());
+                        if(pop.propegationMethod == PropegationMethod.STATIC_KEPLERIAN) {
+                            StaticKeplerianObject obj2 = (StaticKeplerianObject) obj;
+                            KeplerianElements element1 = obj2.elements;
                         }
                     }
                 }
@@ -112,6 +114,10 @@ public class Simulation {
                     updateProgress(i, totalSteps);
                     updateMessage(i + " / " + totalSteps + " steps");
                 }
+
+                VisualizationFile file = VisualizationFileFormatters.createVisualizationFile(settings, populations);
+                FileService.createEmptyVisualizationFile(Constants.appName, settings.simulationName, file);
+
                 return null;
             }
         };
@@ -132,7 +138,7 @@ public class Simulation {
 
             String populationName = population.populationName;
             ObjectClassification classification = ObjectClassification.DEBRIS;
-            PropegationMethod propegationMethod = PropegationMethod.DYNAMIC_FORCE_MODEL;
+            PropegationMethod propegationMethod = PropegationMethod.DYNAMIC_SWITCHING;
             RenderingMethod renderingMethod = RenderingMethod.OBJECTS_3D;
             String color = population.renderingColor;
             String sourceName = population.source;
@@ -147,7 +153,7 @@ public class Simulation {
             if (population.propagationMethod.equals("Two-Body Keplerian")) {
                 propegationMethod = PropegationMethod.STATIC_KEPLERIAN;
             } else if (population.propagationMethod.equals("Dynamic Propegation Switching")) {
-                propegationMethod = PropegationMethod.DYNAMIC_FORCE_MODEL;
+                propegationMethod = PropegationMethod.DYNAMIC_SWITCHING;
             }
 
             if (population.renderingMethod.equals("3D Objects")) {
@@ -167,7 +173,6 @@ public class Simulation {
                     sourceMap
                     );
 
-            population1.generateDebrisObjects();
             populations.add(population1);
         }
 

@@ -1,5 +1,7 @@
 package com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.removalMethods;
 
+import com.lerstudios.space_debris_simulation.simulation.types.RemovalMethodType;
+
 public class OrbitalLaserRemovalMethod implements RemovalMethodTemplate{
 
     public String name;

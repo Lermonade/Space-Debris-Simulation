@@ -1,8 +1,8 @@
-package com.lerstudios.space_debris_simulation.simulation.OrbitDataSource;
+package com.lerstudios.space_debris_simulation.simulation.OrbitPopulations.OrbitDataSource;
 
 import com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.orbitSources.KeplerianDistributionSource;
-import com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.orbitSources.SourceType;
-import com.lerstudios.space_debris_simulation.simulation.Propagation.KeplerianElements;
+import com.lerstudios.space_debris_simulation.simulation.types.SourceType;
+import com.lerstudios.space_debris_simulation.simulation.types.KeplerianElements;
 
 import java.util.Random;
 
@@ -11,6 +11,10 @@ public class KeplerianDistribution implements OrbitDataSource {
     KeplerianDistributionSource source;
 
     private static final Random RANDOM = new Random();
+
+    public KeplerianDistribution() {
+
+    }
 
     public KeplerianDistribution(String name, KeplerianDistributionSource source) {
         this.name = name;

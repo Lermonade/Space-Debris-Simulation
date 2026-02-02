@@ -1,4 +1,4 @@
-package com.lerstudios.space_debris_simulation.simulation.Propagation;
+package com.lerstudios.space_debris_simulation.simulation.types;
 
 public record TimedKeplerianElements(
         KeplerianElements elements,

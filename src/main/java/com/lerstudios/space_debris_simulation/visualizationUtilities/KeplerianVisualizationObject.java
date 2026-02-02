@@ -60,7 +60,7 @@ public class KeplerianVisualizationObject {
     public void moveToOrbitalPosition(double seconds) {
         Point3D pos = PropagationTools.propagateOrbit(this.focusX, this.focusY, this.focusZ,
                 this.semiMajorAxis, this.eccentricity, this.argumentOfPeriapsis, this.inclination, this.raOfAscendingNode,
-                this.initialTrueAnomaly, seconds, Constants.earthGravity, true);
+                this.initialTrueAnomaly, seconds, Constants.gravitationalConstant * Constants.earthMass, true);
         this.object.setTranslateX(pos.getX() * Constants.scaleFactor);
         this.object.setTranslateY(pos.getY() * Constants.scaleFactor);
         this.object.setTranslateZ(pos.getZ() * Constants.scaleFactor);

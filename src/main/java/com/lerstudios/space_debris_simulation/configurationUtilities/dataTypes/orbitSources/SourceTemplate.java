@@ -1,8 +1,8 @@
 package com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.orbitSources;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.lerstudios.space_debris_simulation.simulation.types.SourceType;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,

@@ -1,8 +1,12 @@
-package com.lerstudios.space_debris_simulation.configurationUtilities;
+package com.lerstudios.space_debris_simulation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.lerstudios.space_debris_simulation.configurationUtilities.SimulationSettings;
+import com.lerstudios.space_debris_simulation.simulation.exportFormats.VisualizationFile;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -153,5 +157,81 @@ public class FileService {
     }
 
 
+    public static Path createEmptyVisualizationFile(
+            String appName,
+            String projectFolderName,
+            VisualizationFile visualizationFileObject
+    ) throws IOException {
 
+        Path projectsDir = Paths.get(
+                System.getProperty("user.home"),
+                "Documents",
+                appName,
+                "Projects"
+        );
+
+        Files.createDirectories(projectsDir);
+
+        Path projectDir = projectsDir.resolve(projectFolderName);
+        Files.createDirectories(projectDir);
+
+        Path visualizationsDir = projectDir.resolve("visualizations");
+        Files.createDirectories(visualizationsDir);
+
+        String timestamp = java.time.LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+
+        String fileName = timestamp + "_visualization.json";
+        Path visualizationFile = visualizationsDir.resolve(fileName);
+
+        // Jackson handles JSON creation
+        mapper.writeValue(visualizationFile.toFile(), visualizationFileObject);
+
+        return visualizationFile;
+    }
+
+    public static VisualizationFile openVisualizationFile(
+            String appName,
+            String simulationName,
+            javafx.stage.Window ownerWindow
+    ) {
+
+        try {
+            // Resolve Projects directory
+            Path projectsDir = Paths.get(
+                    System.getProperty("user.home"),
+                    "Documents",
+                    appName,
+                    "Projects"
+            );
+
+            Path visualizationDir = projectsDir
+                    .resolve(simulationName)
+                    .resolve("visualizations");
+
+            if (!Files.exists(visualizationDir)) {
+                throw new IOException("Visualization directory does not exist");
+            }
+
+            // File chooser
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Open Visualization");
+            chooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Visualization Files", "*.json")
+            );
+            chooser.setInitialDirectory(visualizationDir.toFile());
+
+            File selectedFile = chooser.showOpenDialog(ownerWindow);
+            if (selectedFile == null) {
+                return null; // user cancelled
+            }
+
+            // Deserialize
+            return mapper.readValue(selectedFile, VisualizationFile.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

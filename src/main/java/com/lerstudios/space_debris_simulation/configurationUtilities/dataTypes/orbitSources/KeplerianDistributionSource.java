@@ -1,6 +1,7 @@
 package com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.orbitSources;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.lerstudios.space_debris_simulation.simulation.types.SourceType;
 
 public class KeplerianDistributionSource implements SourceTemplate {
     public String sourceName;

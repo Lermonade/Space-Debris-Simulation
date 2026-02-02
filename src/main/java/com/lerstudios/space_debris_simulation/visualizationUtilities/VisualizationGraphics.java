@@ -55,7 +55,7 @@ public class VisualizationGraphics {
         light2.setTranslateZ(0);
         group.getChildren().add(light2);
 
-        this.addManyParticles();
+        //this.addManyParticles();
 
         // Scene Setup
         SubScene window3D = new SubScene(group, 800, 600, true, SceneAntialiasing.BALANCED);
@@ -186,7 +186,7 @@ public class VisualizationGraphics {
                 double newZ = translateZ.getZ() + event.getDeltaY() * zoomSpeed;
 
                 // Clamp zoom distance
-                newZ = Math.max(-1000, Math.min(-102, newZ));
+                newZ = Math.max(-4000, Math.min(-102, newZ));
 
                 translateZ.setZ(newZ);
             });

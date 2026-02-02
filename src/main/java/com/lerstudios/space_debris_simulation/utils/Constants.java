@@ -6,6 +6,18 @@ public class Constants {
     // based on radius of earth
     public static String appName = "SDARS";
     public static double scaleFactor = (double) 100 / 6371000;
-    public static double earthGravity = 3.986e14;
+    public static double earthMass = 5.972e24;
+    public static double gravitationalConstant = 6.67430e-11;
 
+    public static void setScaleFactor(double bodyRadius) {
+        Constants.scaleFactor = (double) 100 / bodyRadius;
+    }
+
+    public static void setEarthMass(double mass) {
+        Constants.earthMass = mass;
+    }
+
+    public static void setGravitationalConstant(double gravity) {
+        Constants.gravitationalConstant = gravity;
+    }
 }

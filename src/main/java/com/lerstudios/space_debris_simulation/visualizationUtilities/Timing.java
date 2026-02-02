@@ -180,4 +180,8 @@ public class Timing {
 
         Timing.pause();
     }
+
+    public static void setMaxSeconds(int seconds) {
+        Timing.maxSeconds = seconds;
+    }
 }

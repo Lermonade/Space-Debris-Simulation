@@ -20,6 +20,7 @@ public class SimulationSettings {
         templateConstants.add(SimulationConstant.number("Gravitational Constant", 6.67430e-11));
         templateConstants.add(SimulationConstant.string("Celestial Body Name", "Earth"));
         templateConstants.add(SimulationConstant.number("Celestial Body Radius", 6371000));
+        templateConstants.add(SimulationConstant.number("Celestial Body Mass", 5.972e24));
         templateConstants.add(SimulationConstant.vector("Testing Vector", new Vector3(0, 7800, 0)));
     }
 

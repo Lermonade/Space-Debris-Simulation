@@ -16,6 +16,10 @@ public class SimUtils {
         return id.get();
     }
 
+    public static void resetID() {
+        id.set(0);
+    }
+
     public static double getEndTimeStep() {
         return endTimeStep;
     }

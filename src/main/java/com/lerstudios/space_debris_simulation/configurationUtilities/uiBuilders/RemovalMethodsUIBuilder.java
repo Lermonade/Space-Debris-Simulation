@@ -3,7 +3,7 @@ package com.lerstudios.space_debris_simulation.configurationUtilities.uiBuilders
 import com.lerstudios.space_debris_simulation.configurationUtilities.SimulationSettings;
 import com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.removalMethods.OrbitalLaserRemovalMethod;
 import com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.removalMethods.RemovalMethodTemplate;
-import com.lerstudios.space_debris_simulation.configurationUtilities.dataTypes.removalMethods.RemovalMethodType;
+import com.lerstudios.space_debris_simulation.simulation.types.RemovalMethodType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
