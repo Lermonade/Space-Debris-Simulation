@@ -1,12 +1,12 @@
 package com.lerstudios.space_debris_simulation;
 
-import com.lerstudios.space_debris_simulation.configurationUtilities.uiBuilders.ConstantsUIBuilder;
-import com.lerstudios.space_debris_simulation.configurationUtilities.SimulationSettings;
-import com.lerstudios.space_debris_simulation.configurationUtilities.uiBuilders.PopulationsUIBuilder;
-import com.lerstudios.space_debris_simulation.configurationUtilities.uiBuilders.SourcesUIBuilder;
-import com.lerstudios.space_debris_simulation.configurationUtilities.uiBuilders.RemovalMethodsUIBuilder;
-import com.lerstudios.space_debris_simulation.simulation.Simulation;
-import com.lerstudios.space_debris_simulation.simulation.exportFormats.VisualizationFile;
+import com.lerstudios.space_debris_simulation.modules.configuration.uiBuilders.ConstantsUIBuilder;
+import com.lerstudios.space_debris_simulation.modules.configuration.SimulationSettings;
+import com.lerstudios.space_debris_simulation.modules.configuration.uiBuilders.PopulationsUIBuilder;
+import com.lerstudios.space_debris_simulation.modules.configuration.uiBuilders.SourcesUIBuilder;
+import com.lerstudios.space_debris_simulation.modules.configuration.uiBuilders.RemovalMethodsUIBuilder;
+import com.lerstudios.space_debris_simulation.modules.simulation.Simulation;
+import com.lerstudios.space_debris_simulation.modules.simulation.exportFormats.SimToVis_File;
 import com.lerstudios.space_debris_simulation.utils.Constants;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -53,6 +53,7 @@ public class configurationController {
     @FXML
     private void initialize() {
         console = new Console(consoleBox);
+        Constants.console = console;
         simulation = new Simulation(console);
     }
 
@@ -112,7 +113,7 @@ public class configurationController {
     }
 
     public void openVisualizationFile(ActionEvent event) throws IOException {
-        VisualizationFile format = FileService.openVisualizationFile(Constants.appName, settings.simulationName, sourcesBox.getScene().getWindow());
+        SimToVis_File format = FileService.openVisualizationFile(Constants.appName, settings.simulationName, sourcesBox.getScene().getWindow());
 
         FXMLLoader loader = new FXMLLoader(
                 Objects.requireNonNull(getClass().getResource("visualization.fxml"))

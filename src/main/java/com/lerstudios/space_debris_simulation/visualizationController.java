@@ -1,12 +1,9 @@
 package com.lerstudios.space_debris_simulation;
 
-import com.lerstudios.space_debris_simulation.simulation.exportFormats.VisualizationFile;
-import com.lerstudios.space_debris_simulation.simulation.exportFormats.VisualizationPopulation;
-import com.lerstudios.space_debris_simulation.simulation.types.PropegationMethod;
-import com.lerstudios.space_debris_simulation.visualizationUtilities.KeplerianVisualizationObject;
-import com.lerstudios.space_debris_simulation.visualizationUtilities.Timing;
-import com.lerstudios.space_debris_simulation.visualizationUtilities.VisualizationGraphics;
-import com.lerstudios.space_debris_simulation.visualizationUtilities.VisualizationMain;
+import com.lerstudios.space_debris_simulation.modules.simulation.exportFormats.SimToVis_File;
+import com.lerstudios.space_debris_simulation.modules.visualization.Timing;
+import com.lerstudios.space_debris_simulation.modules.visualization.VisualizationGraphics;
+import com.lerstudios.space_debris_simulation.modules.visualization.VisualizationMain;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +11,7 @@ import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
@@ -46,11 +44,15 @@ public class visualizationController {
     @FXML
     private Button endButton;
 
+    @FXML
+    private VBox timeline;
+
+
     Timing timing;
     VisualizationGraphics visualization;
     VisualizationMain controller;
 
-    public void initVisualization(VisualizationFile file) {
+    public void initVisualization(SimToVis_File file) {
 
         visualization = new VisualizationGraphics(rootPane);
         controller = new VisualizationMain(file, visualization);
@@ -58,6 +60,10 @@ public class visualizationController {
 
         controller.initializeVisualization();
 
+    }
+
+    public void switchCam() {
+        visualization.switchCam();
     }
 
     @FXML
@@ -71,5 +77,12 @@ public class visualizationController {
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.getScene().setRoot(root);
+    }
+
+    boolean timelineActive = true;
+    public void toggleTimeline() {
+        timelineActive = !timelineActive;
+        timeline.setVisible(timelineActive);
+        timeline.setManaged(timelineActive);
     }
 }

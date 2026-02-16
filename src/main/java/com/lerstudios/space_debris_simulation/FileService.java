@@ -2,8 +2,8 @@ package com.lerstudios.space_debris_simulation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.lerstudios.space_debris_simulation.configurationUtilities.SimulationSettings;
-import com.lerstudios.space_debris_simulation.simulation.exportFormats.VisualizationFile;
+import com.lerstudios.space_debris_simulation.modules.configuration.SimulationSettings;
+import com.lerstudios.space_debris_simulation.modules.simulation.exportFormats.SimToVis_File;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -160,7 +160,7 @@ public class FileService {
     public static Path createEmptyVisualizationFile(
             String appName,
             String projectFolderName,
-            VisualizationFile visualizationFileObject
+            SimToVis_File visualizationFileObject
     ) throws IOException {
 
         Path projectsDir = Paths.get(
@@ -190,7 +190,7 @@ public class FileService {
         return visualizationFile;
     }
 
-    public static VisualizationFile openVisualizationFile(
+    public static SimToVis_File openVisualizationFile(
             String appName,
             String simulationName,
             javafx.stage.Window ownerWindow
@@ -227,7 +227,7 @@ public class FileService {
             }
 
             // Deserialize
-            return mapper.readValue(selectedFile, VisualizationFile.class);
+            return mapper.readValue(selectedFile, SimToVis_File.class);
 
         } catch (Exception e) {
             e.printStackTrace();
